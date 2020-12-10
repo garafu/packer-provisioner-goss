@@ -20,7 +20,7 @@ import (
 )
 
 const gossSpecFile = "/tmp/goss-spec.yaml"
-const gossDebugSpecFile = "/tmp/debug-goss-spec.yaml"
+// const gossDebugSpecFile = "/tmp/debug-goss-spec.yaml"
 
 // GossConfig holds the config data coming in from the packer template
 type GossConfig struct {
@@ -276,31 +276,31 @@ func (p *Provisioner) Provision(ctx context.Context, ui packer.Ui, comm packer.C
 		return fmt.Errorf("Error running Goss: %s", err)
 	}
 
-	ui.Say("\n\n\nDownloading spec file and debug info")
-	if err := p.downloadSpecs(ui, comm); err != nil {
-		return err
-	}
+	// ui.Say("\n\n\nDownloading spec file and debug info")
+	// if err := p.downloadSpecs(ui, comm); err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
 
 // downloadSpecs downloads the Goss specs from the remote host to current working dir on local machine
-func (p *Provisioner) downloadSpecs(ui packer.Ui, comm packer.Communicator) error {
-	ui.Message(fmt.Sprintf("Downloading Goss specs from, %s and %s to current dir", gossSpecFile, gossDebugSpecFile))
-	for _, file := range []string{gossSpecFile, gossDebugSpecFile} {
-		f, err := os.Create(file)
-		if err != nil {
-			return fmt.Errorf("Error opening: %s", err)
-		}
+// func (p *Provisioner) downloadSpecs(ui packer.Ui, comm packer.Communicator) error {
+// 	ui.Message(fmt.Sprintf("Downloading Goss specs from, %s and %s to current dir", gossSpecFile, gossDebugSpecFile))
+// 	for _, file := range []string{gossSpecFile, gossDebugSpecFile} {
+// 		f, err := os.Create(file)
+// 		if err != nil {
+// 			return fmt.Errorf("Error opening: %s", err)
+// 		}
 
-		if err = comm.Download(file, f); err != nil {
-			_ = f.Close()
-			return fmt.Errorf("Error downloading %s: %s", file, err)
-		}
-		_ = f.Close()
-	}
-	return nil
-}
+// 		if err = comm.Download(file, f); err != nil {
+// 			_ = f.Close()
+// 			return fmt.Errorf("Error downloading %s: %s", file, err)
+// 		}
+// 		_ = f.Close()
+// 	}
+// 	return nil
+// }
 
 // installGoss downloads the Goss binary on the remote host
 func (p *Provisioner) installGoss(ui packer.Ui, comm packer.Communicator) error {
@@ -337,10 +337,10 @@ func (p *Provisioner) runGoss(ui packer.Ui, comm packer.Communicator) error {
 			p.config.RemotePath, p.envVars(), goss, p.config.GossFile,
 			p.vars(), p.inline_vars(), gossSpecFile,
 		),
-		"render debug": fmt.Sprintf("cd %s && %s %s %s %s %s render -d > %s",
-			p.config.RemotePath, p.envVars(), goss, p.config.GossFile,
-			p.vars(), p.inline_vars(), gossDebugSpecFile,
-		),
+		// "render debug": fmt.Sprintf("cd %s && %s %s %s %s %s render -d > %s",
+		// 	p.config.RemotePath, p.envVars(), goss, p.config.GossFile,
+		// 	p.vars(), p.inline_vars(), gossDebugSpecFile,
+		// ),
 		"validate": fmt.Sprintf("cd %s && %s %s %s %s %s %s validate --retry-timeout %s --sleep %s %s %s",
 			p.config.RemotePath, p.enableSudo(), p.envVars(), goss, p.config.GossFile,
 			p.vars(), p.inline_vars(), p.retryTimeout(), p.sleep(), p.format(), p.formatOptions(),
